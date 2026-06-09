@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- header -->
+  <div style="text-align: center;justify-content:space-between;width:100%;margin-bottom:24px;">
+    <div>
+      <div style="font-size:18px;font-weight:700;color:#111;">Hammer curl</div>
+      <div style="font-size:13px;color:#6B7280;margin-top:3px;">Biceps, brachialis, brachioradialis</div>
+    </div>
+  </div>
+
+  <!-- score card -->
+  <div style="background:#F5F5F3;border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:16px;width:100%;">
+    <div id="resGrade" style="font-size:60px;font-weight:700;line-height:1;color:#F59E0B;">—</div>
+    <div id="resPct" style="font-size:38px;font-weight:700;color:#111;margin-top:6px;">—</div>
+    <div id="resTagline" style="font-size:14px;color:#6B7280;margin-top:6px;">Loading...</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:5px;margin-top:10px;font-size:13px;color:#00B925;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00B925" stroke-width="2.5"><polyline points="18,15 12,9 6,15"/></svg>
+      <span id="resDeltaText">0 reps completed</span>
+    </div>
+  </div>
+
+  <!-- stats 2x2 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;width:100%;">
+    <div style="background:#fff;border:1.5px solid #F3F4F6;border-radius:14px;padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#00B925" stroke-width="2"/><polyline points="9,12 11,14 15,10" stroke="#00B925" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="font-size:12px;color:#6B7280;">Excellent</span>
+      </div>
+      <div id="resExcellent" style="font-size:30px;font-weight:700;color:#111;">0</div>
+    </div>
+    <div style="background:#fff;border:1.5px solid #F3F4F6;border-radius:14px;padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#F59E0B" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="13" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="#F59E0B"/></svg>
+        <span style="font-size:12px;color:#6B7280;">Warnings</span>
+      </div>
+      <div id="resWarn" style="font-size:30px;font-weight:700;color:#111;">0</div>
+    </div>
+    <div style="background:#fff;border:1.5px solid #F3F4F6;border-radius:14px;padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#FF6B00" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="13" stroke="#FF6B00" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="#FF6B00"/></svg>
+        <span style="font-size:12px;color:#6B7280;">Errors</span>
+      </div>
+      <div id="resBad" style="font-size:30px;font-weight:700;color:#111;">0</div>
+    </div>
+  </div>
+
+  <!-- detailed feedback -->
+  <div style="width:100%;margin-bottom:24px;">
+    <div style="font-size:16px;font-weight:700;color:#111;margin-bottom:12px;">Detailed feedback</div>
+    <div id="resFeedbackList"></div>
+  </div>
+
+  <!-- buttons -->
+  <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
+    <button onclick="window.location.href='schedule.html'" class="btn-primary">Next exercise</button>
+    <button onclick="window.location.href='hammercurlmobile.html'" class="btn-secondary">↺ Try again</button>
+  </div>
+
+</div>
+
+
+<script>
+const raw = localStorage.getItem('hammerResults');
+if (raw) {
+  const d = JSON.parse(raw);
+  const totalReps = (d.repsL || 0) + (d.repsR || 0);
+  const score = Math.max(0, Math.min(100, 100 - d.sessionBadCount * 8 - d.sessionWarnCount * 3));
+  const grade = score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 45 ? 'D' : 'F';
+  const gradeColor = score >= 90 ? '#00B925' : score >= 75 ? '#4CAF50' : score >= 60 ? '#F59E0B' : score >= 45 ? '#FF6B00' : '#FF6B00';
+  const tagline = score >= 90 ? 'Excellent!' : score >= 75 ? 'Great work!' : score >= 60 ? 'Keep improving!' : score >= 45 ? 'Room for improvement' : 'Focus on your technique';
+
+  document.getElementById('resGrade').textContent = grade;
+  document.getElementById('resGrade').style.color = gradeColor;
+  document.getElementById('resPct').textContent = score + '%';
+  document.getElementById('resTagline').textContent = tagline;
+  document.getElementById('resDeltaText').textContent = totalReps + ' reps completed';
+  document.getElementById('resExcellent').textContent = totalReps;
+  document.getElementById('resWarn').textContent = d.sessionWarnCount || 0;
+  document.getElementById('resBad').textContent = d.sessionBadCount || 0;
+
+  const list = document.getElementById('resFeedbackList');
+  const seen = new Map();
+  (d.sessionFeedbackItems || []).forEach(i => seen.set(i.title, i));
+  const items = [...seen.values()];
+
+  if (!items.length) {
+    list.innerHTML = '<div style="font-size:13px;color:#aaa;text-align:center;padding:12px 0;">No feedback received</div>';
+  } else {
+    items.forEach(i => {
+      const ic = i.type === 'good' ? '#00B925' : i.type === 'warn' ? '#F59E0B' : '#FF6B00';
+      const s = i.elapsed % 60, m = Math.floor(i.elapsed / 60);
+      const t = m > 0 ? `${m}:${String(s).padStart(2,'0')}` : `0:${String(s).padStart(2,'0')}`;
+      const showBtn = i.type !== 'good';
+      const icon = i.type === 'good'
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="${ic}" stroke-width="2"/><polyline points="9,12 11,14 15,10" stroke="${ic}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="${ic}" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="13" stroke="${ic}" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="${ic}"/></svg>`;
+      const el = document.createElement('div');
+      el.style.cssText = 'background:#F9FAFB;border-radius:12px;padding:14px 16px;margin-bottom:8px;';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            ${icon}
+            <span style="font-size:14px;font-weight:600;color:#111;">${i.title}</span>
+          </div>
+          <span style="font-size:12px;color:#6B7280;">${t}</span>
+        </div>
+        <div style="font-size:13px;color:#6B7280;padding-left:26px;margin-bottom:${showBtn?'10px':'0'}">${i.msg}</div>
+        ${showBtn ? `<div style="display:flex;justify-content:flex-end;padding-left:26px;"><button onclick="goToCorrectForm('${i.title.replace(/'/g,"\\'")}','${i.msg.replace(/'/g,"\\'")}','${i.type==='bad'?'images/hammercurl.mp4':'images/instructionvideo.mp4'}','${i.type}')" style="background:#fff;border:1.5px solid #0059FF;border-radius:50px;padding:6px 16px;font-size:13px;font-weight:600;color:#0059FF;cursor:pointer;font-family:'poppins',sans-serif;">Correct form</button></div>` : ''}
+      `;
+      list.appendChild(el);
+    });
+  }
+}
+
+function goToCorrectForm(title, subtitle, video, type) {
+  localStorage.setItem('correctFormData', JSON.stringify({title, subtitle, video, type}));
+  window.location.href = 'correctform.html';
+}
+</script>
+</body>
+</html>
