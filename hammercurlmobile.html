@@ -180,7 +180,7 @@ function addLog(type,msg,title=''){
 function onResults(results){
   canvas.width=results.image.width;
   canvas.height=results.image.height;
-  const SCALE=0.8,tx=canvas.width*(1-SCALE)/2,ty=canvas.height*(1-SCALE)/2;
+  const SCALE=0.65,tx=canvas.width*(1-SCALE)/2,ty=canvas.height*(1-SCALE)/2;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.save();ctx.translate(tx,ty);ctx.scale(SCALE,SCALE);ctx.drawImage(results.image,0,0);
   if(!results.poseLandmarks||!countingActive){ctx.restore();return;}
