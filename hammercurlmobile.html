@@ -180,7 +180,7 @@ function addLog(type,msg,title=''){
 function onResults(results){
   canvas.width=results.image.width;
   canvas.height=results.image.height;
-  const SCALE=0.65,tx=canvas.width*(1-SCALE)/2,ty=canvas.height*(1-SCALE)/2;
+  const SCALE=1.0,tx=canvas.width*(1-SCALE)/2,ty=canvas.height*(1-SCALE)/2;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.save();ctx.translate(tx,ty);ctx.scale(SCALE,SCALE);ctx.drawImage(results.image,0,0);
   if(!results.poseLandmarks||!countingActive){ctx.restore();return;}
@@ -279,7 +279,7 @@ async function toggle(){
   pose.setOptions({modelComplexity:0,smoothLandmarks:true,minDetectionConfidence:0.6,minTrackingConfidence:0.5});
   pose.onResults(onResults);
   try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
     video.srcObject=stream;await video.play();
     // Try to zoom out for a wider field of view (activates ultrawide on iPhone)
     try{const track=stream.getVideoTracks()[0];await track.applyConstraints({advanced:[{zoom:0.5}]});}catch(e){}
