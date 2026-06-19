@@ -279,6 +279,8 @@ async function toggle(){
   try{
     const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
     video.srcObject=stream;await video.play();
+    // Try to zoom out for a wider field of view (activates ultrawide on iPhone)
+    try{const track=stream.getVideoTracks()[0];await track.applyConstraints({advanced:[{zoom:0.5}]});}catch(e){}
     countingActive=false;
     camera=new Camera(video,{onFrame:async()=>{await pose.send({image:video});},width:480,height:854});
     await camera.start();
